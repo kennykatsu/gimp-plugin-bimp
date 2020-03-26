@@ -28,6 +28,8 @@ gboolean bimp_opt_keepfolderhierarchy;
 gboolean bimp_opt_deleteondone;
 gboolean bimp_opt_keepdates;
 
+gboolean bimp_opt_nooutput;
+
 gboolean bimp_is_busy;
 
 GSList* bimp_supported_procedures;

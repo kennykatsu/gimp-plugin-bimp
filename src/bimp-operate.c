@@ -301,14 +301,16 @@ static gboolean process_image(gpointer parent)
     }
     
     // Save 
-    g_print("Saving file %s in %s\n", imageout->filename, imageout->filepath);
-    image_save(final_format, imageout, params);
-    
-    if (will_overwrite && bimp_opt_keepdates && mod_time > -1) {
-        // replace with the old dates
-        int res = set_modification_time(imageout->filepath, mod_time);
-        if (res == -1) g_print("An error occurred when replacing the modification date of file.\n");
-    }
+	if (!bimp_opt_nooutput) {
+		g_print("Saving file %s in %s\n", imageout->filename, imageout->filepath);
+		image_save(final_format, imageout, params);
+		
+		if (will_overwrite && bimp_opt_keepdates && mod_time > -1) {
+			// replace with the old dates
+			int res = set_modification_time(imageout->filepath, mod_time);
+			if (res == -1) g_print("An error occurred when replacing the modification date of file.\n");
+		}
+	}
 
     gimp_image_delete(imageout->image_id); // is it useful? 
     

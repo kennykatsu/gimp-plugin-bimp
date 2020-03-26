@@ -59,7 +59,7 @@ GtkWidget *panel_sequence, *panel_options;
 GtkWidget *hbox_sequence;
 GtkWidget *scroll_sequence;
 GtkWidget *popmenu_add, *popmenu_edit, *popmenu_addfiles, *popmenu_removefiles;
-GtkWidget *check_keepfolderhierarchy, *check_deleteondone, *check_keepdates;
+GtkWidget *check_keepfolderhierarchy, *check_deleteondone, *check_keepdates, *check_nooutput;
 GtkWidget *treeview_files;
 GtkWidget *button_preview, *button_outfolder, *button_samefolder;
 GtkWidget* progressbar_visible;
@@ -134,6 +134,7 @@ void bimp_show_gui()
                 else {
                     bimp_opt_alertoverwrite = BIMP_ASK_OVERWRITE;
                     bimp_opt_keepfolderhierarchy = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_keepfolderhierarchy));
+                    bimp_opt_nooutput = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_nooutput));
                     bimp_opt_deleteondone = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_deleteondone));
                     bimp_opt_keepdates = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_keepdates));
                     bimp_start_batch(bimp_window_main);
@@ -228,7 +229,7 @@ static GtkWidget* option_panel_new()
     bimp_opt_keepfolderhierarchy = FALSE;
     check_keepfolderhierarchy = gtk_check_button_new_with_label(_("Keep folder hierarchy"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_keepfolderhierarchy), bimp_opt_keepfolderhierarchy);
-    
+	
     /* TODO? */
     bimp_opt_deleteondone = FALSE;
     check_deleteondone = gtk_check_button_new_with_label(_("Delete original file when done"));
@@ -237,6 +238,12 @@ static GtkWidget* option_panel_new()
     bimp_opt_keepdates = FALSE;
     check_keepdates = gtk_check_button_new_with_label(_("Keep the modification dates"));
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_keepdates), bimp_opt_keepdates);
+    
+	// XALF
+    bimp_opt_nooutput = TRUE;	// default state
+    check_nooutput = gtk_check_button_new_with_label(_("No output"));
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_nooutput), bimp_opt_nooutput);
+	
     
     button_preview = gtk_button_new();
     gtk_button_set_image_position (GTK_BUTTON(button_preview), GTK_POS_TOP);
@@ -256,6 +263,7 @@ static GtkWidget* option_panel_new()
     gtk_box_pack_start(GTK_BOX(vbox_useroptions), check_keepfolderhierarchy, FALSE, FALSE, 0);
     // TODO: delete on done? gtk_box_pack_start(GTK_BOX(vbox_useroptions), check_deleteondone, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_useroptions), check_keepdates, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox_useroptions), check_nooutput, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox_useroptions), button_preview, FALSE, FALSE, 2);
     
     gtk_table_attach_defaults(GTK_TABLE(table), scroll_input, 0, 2, 0, 1);
