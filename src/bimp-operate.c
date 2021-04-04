@@ -39,34 +39,35 @@ static gboolean image_save_png(image_output, gboolean, int, gboolean, gboolean, 
 static gboolean image_save_tga(image_output, gboolean, int);
 static gboolean image_save_tiff(image_output, int);
 static gboolean image_save_webp(image_output, int, gboolean, float, float, gboolean, gboolean, gboolean, int, gboolean, gboolean, gboolean, int, int);
+static gboolean image_save_exr(image_output);
 
 static int overwrite_result(char*, GtkWidget*);
 
-char* current_datetime;
-int processed_count;
-int success_count;
-int total_images;
+static char* current_datetime;
+static int processed_count;
+static int success_count;
+static int total_images;
 
-char* common_folder_path;
+static char* common_folder_path;
 
-gboolean list_contains_changeformat;
-gboolean list_contains_rename;
-gboolean list_contains_watermark;
-gboolean list_contains_savingplugin;
+static gboolean list_contains_changeformat;
+static gboolean list_contains_rename;
+static gboolean list_contains_watermark;
+static gboolean list_contains_savingplugin;
 
 // set of variables to be used when doing Curve color correction
 // they are global so the batch process will read the source curve file once
-gboolean colorcurve_init;
-int colorcurve_num_points_v;
-gdouble* colorcurve_ctr_points_v;
-int colorcurve_num_points_r;
-gdouble* colorcurve_ctr_points_r;
-int colorcurve_num_points_g;
-gdouble* colorcurve_ctr_points_g;
-int colorcurve_num_points_b;
-gdouble* colorcurve_ctr_points_b;
-int colorcurve_num_points_a;
-gdouble* colorcurve_ctr_points_a;
+static gboolean colorcurve_init;
+static int colorcurve_num_points_v;
+static gdouble* colorcurve_ctr_points_v;
+static int colorcurve_num_points_r;
+static gdouble* colorcurve_ctr_points_r;
+static int colorcurve_num_points_g;
+static gdouble* colorcurve_ctr_points_g;
+static int colorcurve_num_points_b;
+static gdouble* colorcurve_ctr_points_b;
+static int colorcurve_num_points_a;
+static gdouble* colorcurve_ctr_points_a;
 
 void bimp_start_batch(gpointer parent_dialog)
 {
@@ -1089,6 +1090,9 @@ static gboolean image_save(format_type type, image_output imageout, format_param
             ((format_params_webp)params)->force_delay
         );
     }
+    else if(type == FORMAT_EXR) {
+        result = image_save_exr(imageout);
+    }
     else {
         // save in the original format
         int final_drawable = gimp_image_merge_visible_layers(imageout->image_id, GIMP_CLIP_TO_IMAGE);
@@ -1367,6 +1371,25 @@ static gboolean image_save_webp(image_output out, int preset, gboolean lossless,
         GIMP_PDB_INT32, xmp,               // Toggle saving xmp data (0/1)
         GIMP_PDB_INT32, delay,             // Delay to use when timestamps are not available or forced
         GIMP_PDB_INT32, force_delay,       // Force delay on all frames
+        GIMP_PDB_END
+    );
+    
+    return TRUE;
+}
+
+static gboolean image_save_exr(image_output out) 
+{
+    gint nreturn_vals;
+    int final_drawable = gimp_image_merge_visible_layers(out->image_id, GIMP_CLIP_TO_IMAGE);
+    
+    GimpParam *return_vals = gimp_run_procedure(
+        "file_exr_save",
+        &nreturn_vals,
+        GIMP_PDB_INT32, GIMP_RUN_NONINTERACTIVE,
+        GIMP_PDB_IMAGE, out->image_id,
+        GIMP_PDB_DRAWABLE, final_drawable,
+        GIMP_PDB_STRING, out->filepath,
+        GIMP_PDB_STRING, out->filename,
         GIMP_PDB_END
     );
     
