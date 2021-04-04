@@ -18,6 +18,8 @@
 #include "bimp-utils.h"
 #include "plugin-intl.h"
 
+#define REVERSE_OPENED 1
+
 static GtkWidget* sequence_panel_new(void);
 static GtkWidget* option_panel_new(void);
 static void init_fileview(void);
@@ -356,8 +358,14 @@ static void add_opened_files()
     int* image_ids = gimp_image_list (&num_images);
     int i;
     gboolean missing = FALSE;
+	
     for (i = 0; i < num_images; i++) {
-        gchar* uri = gimp_image_get_uri(image_ids[i]);
+        gchar* uri = 0;
+		if (!REVERSE_OPENED) {
+			uri = gimp_image_get_uri(image_ids[i]);
+		} else {
+			uri = gimp_image_get_uri(image_ids[num_images-1-i]);
+		}
         if (uri != NULL) {
             gchar* path = g_filename_from_uri(uri, NULL, NULL);
             if (path != NULL) add_input_file (path);
